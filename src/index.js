@@ -30,6 +30,7 @@ const posts = [{
 }, {
     id:"3",
     title:'Goo goo gaa gaa',
+    body:"googly gaaaa",
     published: false
 }]
 
@@ -37,7 +38,7 @@ const typeDefs = `
     type Query {
         users(query: String): [User!]!
         me: User!
-        posts: [Post!]!
+        posts(query: String): [Post!]!
     }
 
     type User {
@@ -74,7 +75,14 @@ const resolvers = {
             }
         },
         posts(parent, args, ctx, info){
-            return posts
+            if(!args.query){
+                return posts
+            }
+            return posts.filter((post) => {
+                const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase())
+                const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase())
+                return isTitleMatch || isBodyMatch
+            })
         },
     }
 }
